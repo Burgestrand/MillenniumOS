@@ -24,6 +24,14 @@ if { global.mosTM && !global.mosDD[9] }
 
     set global.mosDD[9] = true
 
+; Warn if WCS X/Y origin is not set — G68 rotates around the WCS origin
+var workOffset = { (exists(param.W) && param.W != null) ? param.W : move.workplaceNumber }
+if { move.axes[0].workplaceOffsets[var.workOffset] == 0 && move.axes[1].workplaceOffsets[var.workOffset] == 0 }
+    var wN = { var.workOffset + 1 }
+    M291 P{"<b>WARNING</b>: WCS " ^ var.wN ^ " X/Y origin is not set.<br/>Rotation will apply around <b>machine zero</b>. Set X/Y origin first."} R"MillenniumOS: Rotation Probe" T0 S4 K{"Continue", "Cancel"} F1
+    if { input == 1 }
+        abort { "Rotation probe aborted!" }
+
 ; Make sure probe tool is selected
 if { global.mosPTID != state.currentTool }
     T T{global.mosPTID}
