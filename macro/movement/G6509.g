@@ -48,6 +48,15 @@ M291 P"Please jog the probe to the <b>first</b> position near the surface, then 
 if { result != 0 }
     abort { "Rotation probe aborted!" }
 
+; Confirm probe direction before first probe
+var dirSign = { (var.probeAxis == 0 || var.probeAxis == 2) ? "positive" : "negative" }
+var dirAxis = { (var.probeAxis <= 1) ? "X" : "Y" }
+
+if { global.mosTM }
+    M291 P{"Probe will move in <b>" ^ var.dirSign ^ " " ^ var.dirAxis ^ "</b> for up to <b>" ^ var.probeDist ^ "</b> mm."} R"MillenniumOS: Rotation Probe" T0 S4 K{"Continue", "Cancel"} F0
+    if { input != 0 }
+        abort { "Rotation probe aborted!" }
+
 ; Probe P1 from current position in the selected direction
 M5000 P0
 if { var.probeAxis == 0 }
