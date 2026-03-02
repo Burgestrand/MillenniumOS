@@ -34,6 +34,15 @@ var pID = { global.mosTPID }
 M291 P"Please select the surface to probe for rotation measurement.<br/><b>NOTE</b>: Surface names are relative to an operator standing at the front of the machine." R"MillenniumOS: Rotation Probe" T0 S4 F0 K{"Left","Right","Front","Back"}
 var probeAxis = { input }
 
+; Prompt for probe distance
+M291 P"Please enter the max distance to probe towards the surface in mm." R"MillenniumOS: Rotation Probe" J1 T0 S6 F{global.mosCL}
+if { result != 0 }
+    abort { "Rotation probe aborted!" }
+
+var probeDist = { input }
+if { var.probeDist < 0 }
+    abort { "Probe distance must not be negative!" }
+
 ; Jog to first position
 M291 P"Please jog the probe to the <b>first</b> position near the surface, then press <b>OK</b>.<br/><b>CAUTION</b>: Jogging in RRF does <b>NOT</b> watch the probe status!" R"MillenniumOS: Rotation Probe" X1 Y1 Z1 T0 S3
 if { result != 0 }
@@ -42,13 +51,13 @@ if { result != 0 }
 ; Probe P1 from current position in the selected direction
 M5000 P0
 if { var.probeAxis == 0 }
-    G6512.1 I{var.pID} X{global.mosMI[0] + global.mosCL + global.mosOT}
+    G6512.1 I{var.pID} X{global.mosMI[0] + var.probeDist}
 elif { var.probeAxis == 1 }
-    G6512.1 I{var.pID} X{global.mosMI[0] - global.mosCL - global.mosOT}
+    G6512.1 I{var.pID} X{global.mosMI[0] - var.probeDist}
 elif { var.probeAxis == 2 }
-    G6512.1 I{var.pID} Y{global.mosMI[1] + global.mosCL + global.mosOT}
+    G6512.1 I{var.pID} Y{global.mosMI[1] + var.probeDist}
 elif { var.probeAxis == 3 }
-    G6512.1 I{var.pID} Y{global.mosMI[1] - global.mosCL - global.mosOT}
+    G6512.1 I{var.pID} Y{global.mosMI[1] - var.probeDist}
 
 var p1 = { global.mosMI }
 
@@ -60,13 +69,13 @@ if { result != 0 }
 ; Probe P2 from current position in the selected direction
 M5000 P0
 if { var.probeAxis == 0 }
-    G6512.1 I{var.pID} X{global.mosMI[0] + global.mosCL + global.mosOT}
+    G6512.1 I{var.pID} X{global.mosMI[0] + var.probeDist}
 elif { var.probeAxis == 1 }
-    G6512.1 I{var.pID} X{global.mosMI[0] - global.mosCL - global.mosOT}
+    G6512.1 I{var.pID} X{global.mosMI[0] - var.probeDist}
 elif { var.probeAxis == 2 }
-    G6512.1 I{var.pID} Y{global.mosMI[1] + global.mosCL + global.mosOT}
+    G6512.1 I{var.pID} Y{global.mosMI[1] + var.probeDist}
 elif { var.probeAxis == 3 }
-    G6512.1 I{var.pID} Y{global.mosMI[1] - global.mosCL - global.mosOT}
+    G6512.1 I{var.pID} Y{global.mosMI[1] - var.probeDist}
 
 var p2 = { global.mosMI }
 
